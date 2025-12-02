@@ -1,13 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { LuMenu } from "react-icons/lu";
 import { IoClose } from "react-icons/io5";
 import { ModeToggle } from "./ThemeToggle";
+import { useNavigate } from "react-router-dom";
 
 const Nav = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen(!isDropdownOpen);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+useEffect(() => {
+  const checkAuth = () => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  };
+
+  checkAuth(); // run on mount
+
+  // listen to custom event
+  window.addEventListener("authChanged", checkAuth);
+
+  return () => {
+    window.removeEventListener("authChanged", checkAuth);
+  };
+}, []);
+
+
+
+const handleLogout = () => {
+  localStorage.removeItem("token");
+
+  // notify navbar immediately
+  window.dispatchEvent(new Event("authChanged"));
+
+  navigate("/login");
+};
 
   // const logoutHandler = () => {
   //   // Add logout functionality (e.g., clear session or token)
@@ -68,22 +99,34 @@ const Nav = () => {
             </div>
             {/* Login & Signup Buttons */}
             <div className="flex justify-center items-center gap-2">
-              <button className="xmd:ml-auto">
-                <Link
-                  to="/login"
-                  className="inline-block py-2 px-4 text-[#043873] bg-[#FFE492] hover:bg-yellow-400 rounded-lg font-semibold"
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="inline-block py-2 px-4 text-red-600 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold"
                 >
-                  Login
-                </Link>
-              </button>
-              <button>
-                <Link
-                  to="/register"
-                  className="inline-block py-2 px-4 text-white bg-[#4f9cf9] hover:bg-blue-700 rounded-lg font-semibold"
-                >
-                  Signup
-                </Link>
-              </button>
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <button className="xmd:ml-auto">
+                    <Link
+                      to="/login"
+                      className="inline-block py-2 px-4 text-[#043873] bg-[#FFE492] hover:bg-yellow-400 rounded-lg font-semibold"
+                    >
+                      Login
+                    </Link>
+                  </button>
+                  <button>
+                    <Link
+                      to="/register"
+                      className="inline-block py-2 px-4 text-white bg-[#4f9cf9] hover:bg-blue-700 rounded-lg font-semibold"
+                    >
+                      Signup
+                    </Link>
+                  </button>
+                </>
+              )}
+
               {/* Logout Button
             <li>
               <Link
@@ -128,22 +171,34 @@ const Nav = () => {
           </ul>
           {/* Login & Signup Buttons */}
           <div className="flex justify-center items-center gap-4">
-            <button className="xmd:ml-auto">
-              <Link
-                to="/login"
-                className="inline-block py-2 px-4 text-[#043873] bg-[#FFE492] hover:bg-yellow-400 rounded-lg font-semibold"
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="inline-block py-2 px-4 text-red-600 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold"
               >
-                Login
-              </Link>
-            </button>
-            <button>
-              <Link
-                to="/register"
-                className="inline-block py-2 px-4 text-white bg-[#4f9cf9] hover:bg-blue-700 rounded-lg font-semibold"
-              >
-                Signup
-              </Link>
-            </button>
+                Logout
+              </button>
+            ) : (
+              <>
+                <button className="xmd:ml-auto">
+                  <Link
+                    to="/login"
+                    className="inline-block py-2 px-4 text-[#043873] bg-[#FFE492] hover:bg-yellow-400 rounded-lg font-semibold"
+                  >
+                    Login
+                  </Link>
+                </button>
+                <button>
+                  <Link
+                    to="/register"
+                    className="inline-block py-2 px-4 text-white bg-[#4f9cf9] hover:bg-blue-700 rounded-lg font-semibold"
+                  >
+                    Signup
+                  </Link>
+                </button>
+              </>
+            )}
+
             {/* Logout Button
             <li>
               <Link

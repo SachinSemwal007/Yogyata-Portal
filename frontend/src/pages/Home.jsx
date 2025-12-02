@@ -6,6 +6,7 @@ import Pricing from "./Pricing.jsx";
 const Home = () => {
   return (
     <>
+     <div className="pt-20">
       <HeroSection />
       <AboutUs />
 
@@ -190,6 +191,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      </div>
     </>
   );
 };
